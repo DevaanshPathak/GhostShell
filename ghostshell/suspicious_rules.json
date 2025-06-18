@@ -1,0 +1,6 @@
+{
+  "max_connections_per_ip": 100,
+  "malicious_countries": ["KP", "RU", "IR"],
+  "max_connections_per_local_port": 20,
+  "suspicious_private_ports": [22, 23, 3389]
+}

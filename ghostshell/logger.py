@@ -5,6 +5,7 @@ from datetime import datetime
 from ghostshell.sniffer import get_connections
 from ghostshell.log_db import init_db, insert_connections
 from rich import print
+from ghostshell.detector import detect_suspicious
 
 LOG_DIR = "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -43,3 +44,5 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Logging snapshot...")
     log_to_db(debug=args.debug, write_json=args.json)
     print("✅ [green]Log snapshot written to logs/logs.db[/green]")
+
+conns = detect_suspicious(get_connections())

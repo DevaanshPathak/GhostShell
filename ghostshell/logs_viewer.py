@@ -6,11 +6,11 @@ from rich.console import Console
 DB_PATH = "logs/logs.db"
 console = Console()
 
-def query_logs(ip=None, country=None, date=None, limit=50):
+def query_logs(ip=None, country=None, date=None, suspicious=False, limit=50):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
-    sql = "SELECT time, proto, local, remote, status, pid, country, isp FROM connections WHERE 1=1"
+    sql = "SELECT time, proto, local, remote, status, pid, country, isp, suspicious, reason FROM connections WHERE 1=1"
     params = []
 
     if ip:
@@ -23,7 +23,10 @@ def query_logs(ip=None, country=None, date=None, limit=50):
 
     if date:
         sql += " AND time LIKE ?"
-        params.append(f"{date}%")  # Matches anything starting with date
+        params.append(f"{date}%")  # assumes time is full timestamp if you switch later
+
+    if suspicious:
+        sql += " AND suspicious = 1"
 
     sql += " ORDER BY time DESC LIMIT ?"
     params.append(limit)
@@ -44,9 +47,13 @@ def display_table(rows):
     table.add_column("PID", style="bold")
     table.add_column("Country", style="magenta")
     table.add_column("ISP", style="blue")
+    table.add_column("⚠️ Suspicious?", style="red")
+    table.add_column("Reason", style="bold red")
 
     for row in rows:
-        table.add_row(*[str(cell) for cell in row])
+        time, proto, local, remote, status, pid, country, isp, suspicious, reason = row
+        is_suspicious = "[bold red]Yes[/bold red]" if suspicious else "No"
+        table.add_row(time, proto, local, remote, status, str(pid), country, isp, is_suspicious, reason)
 
     console.print(table)
 
@@ -55,10 +62,17 @@ if __name__ == "__main__":
     parser.add_argument("--ip", help="Search by IP or substring")
     parser.add_argument("--country", help="Filter by country code (e.g., IN)")
     parser.add_argument("--date", help="Filter by date (YYYY-MM-DD)")
+    parser.add_argument("--suspicious", action="store_true", help="Show only suspicious entries")
     parser.add_argument("--limit", type=int, default=50, help="Limit results (default: 50)")
 
     args = parser.parse_args()
-    logs = query_logs(ip=args.ip, country=args.country, date=args.date, limit=args.limit)
+    logs = query_logs(
+        ip=args.ip,
+        country=args.country,
+        date=args.date,
+        suspicious=args.suspicious,
+        limit=args.limit
+    )
 
     if logs:
         display_table(logs)
