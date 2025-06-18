@@ -1,6 +1,6 @@
 import requests
 import ipaddress
-import requests
+from ghostshell.utils import extract_ip, is_private_ip
 
 def is_private_ip(ip):
     try:
@@ -53,3 +53,18 @@ def get_ip_location(ip: str):
         return data.get("country", "Unknown"), data.get("isp", "Unknown")
     except Exception:
         return "Unknown", "Unknown"
+    
+def enrich_connections(conns):
+    """Mock geo enrichment for now — add country/ISP fields."""
+    for conn in conns:
+        remote_ip = extract_ip(conn["remote"])
+
+        if not remote_ip or is_private_ip(remote_ip):
+            conn["country"] = "N/A"
+            conn["isp"] = "N/A"
+        else:
+            # Replace this block with real geolocation later
+            conn["country"] = "RU" if remote_ip.startswith("8.") else "IN"
+            conn["isp"] = "BadISP" if remote_ip.startswith("8.") else "GoodISP"
+
+    return conns

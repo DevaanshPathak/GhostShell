@@ -24,16 +24,13 @@ def extract_ip(address: str) -> str:
     except Exception:
         return address
 
-def extract_port(address: str) -> str:
-    """Extract port from 'IP:Port' string."""
-    try:
-        if not address:
-            return None
-        if address.count(':') > 1 and ']' in address:
-            return address.split(']')[-1].lstrip(':')
-        return address.split(':')[-1]
-    except Exception:
-        return None
+def extract_port(addr):
+    if ":" in addr and not addr.startswith("["):
+        return int(addr.rsplit(":", 1)[-1])
+    if addr.startswith("[") and "]:" in addr:
+        return int(addr.split("]:")[-1])
+    return None
+
 
 def safe_get(d: dict, key: str, default="N/A") -> str:
     """Safely get a value from a dict with a default."""
