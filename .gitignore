@@ -194,3 +194,4 @@ cython_debug/
 .cursorindexingignore
 logs/logs.db
 /logs
+ghostshell/test.py
