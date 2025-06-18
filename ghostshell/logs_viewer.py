@@ -2,6 +2,7 @@ import argparse
 import sqlite3
 from rich.table import Table
 from rich.console import Console
+from ghostshell.exporter import export_to_json, export_to_csv
 
 DB_PATH = "logs/logs.db"
 console = Console()
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     parser.add_argument("--date", help="Filter by date (YYYY-MM-DD)")
     parser.add_argument("--suspicious", action="store_true", help="Show only suspicious entries")
     parser.add_argument("--limit", type=int, default=50, help="Limit results (default: 50)")
+    parser.add_argument("--export", help="Export results to a file (json or csv)")
 
     args = parser.parse_args()
     logs = query_logs(
@@ -76,5 +78,14 @@ if __name__ == "__main__":
 
     if logs:
         display_table(logs)
+        if args.export:
+            export_path = args.export
+            if export_path.endswith(".json"):
+                export_to_json(logs, export_path)
+            elif export_path.endswith(".csv"):
+                export_to_csv(logs, export_path)
+            else:
+                console.print(f"[red]Unsupported export format. Use .json or .csv[/red]")
     else:
         console.print("[red]No matching logs found.[/red]")
+
