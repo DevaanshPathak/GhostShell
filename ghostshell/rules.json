@@ -1,0 +1,8 @@
+{
+  "max_connections_per_ip": 50,
+  "max_connections_per_local_port": 15,
+  "malicious_countries": ["RU", "KP", "CN", "IR", "SY"],
+  "suspicious_private_ports": [9999, 10001, 31337],
+  "blacklisted_isps": ["EvilCorp ISP", "ShadowNet"],
+  "flagged_ports": [4444, 6667, 1337]
+}

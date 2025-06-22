@@ -5,6 +5,10 @@ from ghostshell.detector import detect_suspicious
 from ghostshell.geo import enrich_connections
 from ghostshell.log_db import insert_connections
 from ghostshell.rules import load_rules
+from ghostshell.detector import load_rules
+
+
+rules = load_rules(args.rules) if args.rules else load_rules()
 
 WATCH_INTERVAL = 5  # seconds
 
@@ -31,6 +35,7 @@ def watch_mode(debug=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GhostShell Live Watcher")
     parser.add_argument('--debug', action='store_true', help='Print debug info to console')
+    parser.add_argument("--rules", help="Path to custom rules JSON", default=None)
     args = parser.parse_args()
 
     watch_mode(debug=args.debug)

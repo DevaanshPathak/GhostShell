@@ -1,10 +1,10 @@
 from collections import Counter
-import ipaddress
 import os
 import json
 from ipaddress import ip_address, IPv4Network
 
-RULES_PATH = os.path.join(os.path.dirname(__file__), "suspicious_rules.json")
+DEFAULT_RULES_PATH = os.path.join(os.path.dirname(__file__), "rules.json")
+
 
 def is_private_ip(ip: str) -> bool:
     try:
@@ -19,11 +19,14 @@ def extract_ip_port(addr: str):
         return ip, int(port)
     except (ValueError, AttributeError):
         return None, None
-
-def load_rules():
-    with open(RULES_PATH, "r", encoding="utf-8") as f:
-        rules = json.load(f)
-    return rules
+    
+def load_rules(path=DEFAULT_RULES_PATH):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[!] Failed to load rules: {e}")
+        return {}
 
 def detect_suspicious(connections, rules):
     suspicious_entries = []
