@@ -27,7 +27,7 @@ def load_rules(path=DEFAULT_RULES_PATH):
     except Exception as e:
         print(f"[!] Failed to load rules: {e}")
         return {}
-#xyz test
+
 def detect_suspicious(connections, rules):
     suspicious_entries = []
 
